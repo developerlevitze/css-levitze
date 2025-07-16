@@ -124,3 +124,9 @@
 #n8n-send-button:hover {
     background-color: #218838;
 }
+
+#n8n-chatbot-widget.open {
+    transform: translateY(0) translateX(0);
+    opacity: 1;
+    visibility: visible;
+}

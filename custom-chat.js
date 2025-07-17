@@ -9,11 +9,33 @@ const sendButton = document.getElementById('n8n-send-button');
 
 const N8N_CHATBOT_ENDPOINT = 'https://levitze.app.n8n.cloud/webhook/a4257301-3fb9-4b9d-a965-1fa66f314696/chat';
 
+let userIp = null;
+let sessionId = null;
+
+async function getUserIpAndSessionId() {
+    try {
+        const res = await fetch('https://api.ipify.org?format=json');
+        const data = await res.json();
+        userIp = data.ip;
+        // Session ID: IP + timestamp
+        sessionId = `${userIp}-${Date.now()}`;
+    } catch (e) {
+        // Si falla, solo usa timestamp
+        sessionId = `unknown-${Date.now()}`;
+    }
+}
+
 // Abrir/cerrar el chatbot
-toggleButton.addEventListener('click', () => {
+
+toggleButton.addEventListener('click', async () => {
     chatWidget.classList.toggle('open');
     toggleButton.style.display = chatWidget.classList.contains('open') ? 'none' : 'flex';
-    if (chatWidget.classList.contains('open')) userInput.focus();
+    if (chatWidget.classList.contains('open')) {
+        userInput.focus();
+        if (!sessionId) {
+            await getUserIpAndSessionId();
+        }
+    }
 });
 
 closeButton.addEventListener('click', () => {
@@ -37,11 +59,16 @@ async function sendMessage() {
     // Mostrar "escribiendo..." como mensaje del bot
     showTypingIndicator();
 
+    // Si no hay sessionId, obtenerlo
+    if (!sessionId) {
+        await getUserIpAndSessionId();
+    }
+
     try {
         const response = await fetch(N8N_CHATBOT_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message })
+            body: JSON.stringify({ message, sessionId })
         });
 
         if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);

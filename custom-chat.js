@@ -26,7 +26,6 @@ async function getUserIpAndSessionId() {
 }
 
 // Abrir/cerrar el chatbot
-
 toggleButton.addEventListener('click', async () => {
     chatWidget.classList.toggle('open');
     toggleButton.style.display = chatWidget.classList.contains('open') ? 'none' : 'flex';
@@ -46,17 +45,21 @@ closeButton.addEventListener('click', () => {
 // Envío de mensajes
 sendButton.addEventListener('click', sendMessage);
 userInput.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') sendMessage();
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
 });
 
 async function sendMessage() {
     const message = userInput.value.trim();
     if (!message) return;
 
+    // Añadir mensaje del usuario
     addMessage(message, 'user');
     userInput.value = '';
 
-    // Mostrar "escribiendo..." como mensaje del bot
+    // Mostrar indicador de escritura
     showTypingIndicator();
 
     // Si no hay sessionId, obtenerlo
@@ -75,10 +78,14 @@ async function sendMessage() {
 
         const data = await response.json();
 
-        // Eliminar el mensaje "escribiendo..." antes de mostrar la respuesta
+        // Eliminar el indicador de escritura
         removeTypingIndicator();
 
-        addMessage(data.output, 'bot');
+        // Añadir respuesta del bot con un pequeño delay para mejor UX
+        setTimeout(() => {
+            addMessage(data.output, 'bot');
+        }, 300);
+
     } catch (error) {
         removeTypingIndicator();
         console.error('Error al comunicarse con el chatbot:', error);
@@ -92,12 +99,17 @@ function addMessage(text, sender) {
 
     // Formato Markdown simple: negrita y saltos de línea
     let formatted = text
-        .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>') // negrita
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // negrita
+        .replace(/\*(.*?)\*/g, '<em>$1</em>') // cursiva
         .replace(/\n/g, '<br>'); // saltos de línea
 
     messageElement.innerHTML = formatted;
     chatMessages.appendChild(messageElement);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    // Scroll suave al final
+    setTimeout(() => {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }, 100);
 }
 
 function showTypingIndicator() {
@@ -105,17 +117,47 @@ function showTypingIndicator() {
     const typingElement = document.createElement('div');
     typingElement.classList.add('n8n-message', 'bot');
     typingElement.id = 'typing-indicator';
-    typingElement.innerHTML = '<i>Escribiendo...</i>';
+    typingElement.innerHTML = 'Escribiendo...';
     chatMessages.appendChild(typingElement);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
 function removeTypingIndicator() {
     const typingIndicator = document.getElementById('typing-indicator');
-    if (typingIndicator) typingIndicator.remove();
+    if (typingIndicator) {
+        typingIndicator.remove();
+    }
 }
 
 // Mensaje de bienvenida inicial del bot
-if (chatMessages.children.length === 0) {
-    addMessage('¡Hola! Soy un asistente especializado de Levitze. ¿Cómo puedo ayudarte hoy?', 'bot');
+function initializeChat() {
+    if (chatMessages.children.length === 0) {
+        setTimeout(() => {
+            addMessage('¡Hola! 👋 Soy tu asistente especializado de Levitze. ¿Cómo puedo ayudarte hoy?', 'bot');
+        }, 500);
+    }
 }
+
+// Inicializar el chat cuando se carga la página
+document.addEventListener('DOMContentLoaded', initializeChat);
+
+// Mejorar la experiencia de usuario
+userInput.addEventListener('input', function() {
+    // Auto-resize del input si es necesario
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+});
+
+// Prevenir que se cierre el chat al hacer clic dentro
+chatWidget.addEventListener('click', function(e) {
+    e.stopPropagation();
+});
+
+// Cerrar el chat al hacer clic fuera (opcional)
+document.addEventListener('click', function(e) {
+    if (!chatWidget.contains(e.target) && !toggleButton.contains(e.target)) {
+        // Opcional: descomentar para cerrar al hacer clic fuera
+        // chatWidget.classList.remove('open');
+        // toggleButton.style.display = 'flex';
+    }
+});

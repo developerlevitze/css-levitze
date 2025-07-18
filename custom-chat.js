@@ -133,7 +133,7 @@ function removeTypingIndicator() {
 function initializeChat() {
     if (chatMessages.children.length === 0) {
         setTimeout(() => {
-            addMessage('¡Hola! 👋 Soy tu asistente especializado de Levitze. ¿Cómo puedo ayudarte hoy?', 'bot');
+            addMessage('¡Hola! Bienvenido a Levitze, donde creamos Chatbots para prospectar y atender tus cliente 24/7. Dime, ¿qué ideas tienes en mente para maximizar cada visita a tu sitio web?', 'bot');
         }, 500);
     }
 }

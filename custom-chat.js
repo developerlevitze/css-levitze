@@ -161,3 +161,9 @@ document.addEventListener('click', function(e) {
         // toggleButton.style.display = 'flex';
     }
 });
+
+// Abrir el chat automáticamente al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    chatWidget.classList.add('open');
+    if (toggleButton) toggleButton.style.display = 'none';
+});

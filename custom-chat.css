@@ -221,6 +221,21 @@
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
     border-top: 1px solid rgba(0, 0, 0, 0.05);
+    position: relative;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+#levitze-brand {
+    display: block;
+    text-align: right;
+    font-size: 13px;
+    color: #F48B22;
+    font-weight: 600;
+    margin-top: 6px;
+    margin-right: 2px;
+    letter-spacing: 0.5px;
+    user-select: none;
 }
 
 #n8n-user-input {

@@ -11,7 +11,7 @@
     right: 25px;
     width: 380px;
     height: 550px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #F48B22 0%, #4F5650 100%);
     border: none;
     border-radius: 20px;
     box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.1);
@@ -39,11 +39,11 @@
     right: 25px;
     width: 64px;
     height: 64px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #F48B22 0%, #4F5650 100%);
     color: white;
     border: none;
     border-radius: 50%;
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4), 0 0 0 1px rgba(255,255,255,0.1);
+    box-shadow: 0 8px 25px rgba(244, 139, 34, 0.4), 0 0 0 1px rgba(255,255,255,0.1);
     font-size: 0; /* Ocultar el texto/emoji del HTML */
     display: flex;
     align-items: center;
@@ -78,7 +78,7 @@
 }
 
 #n8n-chat-header {
-    background: rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, #F48B22 0%, #4F5650 100%);
     backdrop-filter: blur(20px);
     color: white;
     padding: 20px;
@@ -183,18 +183,18 @@
 
 .n8n-message.user {
     align-self: flex-end;
-    background: linear-gradient(135deg, #D4A574 0%, #C8956D 100%);
-    color: white;
-    box-shadow: 0 4px 12px rgba(212, 165, 116, 0.3);
+    background: #4F5650;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(79, 86, 80, 0.3);
     border-bottom-right-radius: 6px;
 }
 
 .n8n-message.bot {
     align-self: flex-start;
-    background: white;
-    color: #2d3748;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    background: #F48B22;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(244, 139, 34, 0.15);
+    border: 1px solid rgba(244, 139, 34, 0.15);
     border-bottom-left-radius: 6px;
     position: relative;
 }
@@ -206,8 +206,8 @@
     top: 12px;
     width: 16px;
     height: 16px;
-    background: white;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    background: #F48B22;
+    border: 1px solid rgba(244, 139, 34, 0.15);
     border-right: none;
     border-bottom: none;
     transform: rotate(-45deg);
@@ -245,7 +245,7 @@
 }
 
 #n8n-send-button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #F48B22 0%, #4F5650 100%);
     color: white;
     border: none;
     border-radius: 50%;
@@ -256,7 +256,7 @@
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 12px rgba(244, 139, 34, 0.3);
     font-size: 20px;
 }
 

@@ -117,7 +117,13 @@ function showTypingIndicator() {
     const typingElement = document.createElement('div');
     typingElement.classList.add('n8n-message', 'bot');
     typingElement.id = 'typing-indicator';
-    typingElement.innerHTML = 'Escribiendo...';
+    typingElement.innerHTML = `
+      <span class="typing-dots">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </span>
+    `;
     chatMessages.appendChild(typingElement);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }

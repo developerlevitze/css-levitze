@@ -212,6 +212,14 @@
         }
     }
 
+    // Format message text
+    function formatMessage(text) {
+        return text
+            .replace(/\*\*(.*?)\*\*/g, '$1') // Eliminar negrita
+            .replace(/\*(.*?)\*/g, '$1') // Eliminar cursiva
+            .replace(/\n/g, '<br>'); // Convertir saltos de línea
+    }
+
     // Add message to chat
     function addMessageToChat(message, sender) {
         const messagesContainer = document.getElementById('n8n-chat-messages');
@@ -219,26 +227,23 @@
 
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${sender}`;
-        
-        // Add sender label for bot messages
+
         if (sender === 'bot') {
             const senderLabel = document.createElement('div');
             senderLabel.className = 'message-sender';
             senderLabel.textContent = 'Emilia';
             messageDiv.appendChild(senderLabel);
         }
-        
+
         const bubbleDiv = document.createElement('div');
         bubbleDiv.className = 'message-bubble';
-        bubbleDiv.textContent = message;
-        
+        bubbleDiv.innerHTML = formatMessage(message); // Formatear el mensaje
+
         messageDiv.appendChild(bubbleDiv);
         messagesContainer.appendChild(messageDiv);
-        
-        // Scroll to bottom
+
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        
-        // Store in history
+
         messageHistory.push({ message, sender, timestamp: new Date() });
     }
 

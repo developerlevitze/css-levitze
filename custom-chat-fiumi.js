@@ -172,40 +172,39 @@
     async function sendMessage() {
         const input = document.getElementById('n8n-user-input');
         const message = input.value.trim();
-        
+
         if (!message) return;
 
-        // Add user message to chat
+        // Añadir mensaje del usuario al chat
         addMessageToChat(message, 'user');
-        
-        // Clear input
+
+        // Limpiar el input
         input.value = '';
-        
-        // Show typing indicator
+
+        // Mostrar indicador de escritura
         showTypingIndicator();
-        
-        // Simulate realistic typing delay (1-3 seconds)
+
+        // Simular un retraso realista de escritura (1-3 segundos)
         const typingDelay = Math.random() * 2000 + 1000;
-        
-        // Send to n8n webhook
+
         try {
-            // Wait for minimum typing delay before showing response
+            // Esperar el retraso mínimo de escritura antes de mostrar la respuesta
             const [response] = await Promise.all([
                 sendToN8N(message),
                 new Promise(resolve => setTimeout(resolve, typingDelay))
             ]);
-            
+
             hideTypingIndicator();
-            
-            if (response && response.message) {
-                addMessageToChat(response.message, 'bot');
+
+            if (response && response.output) {
+                addMessageToChat(response.output, 'bot');
             } else {
                 addMessageToChat('Lo siento, hubo un problema con mi respuesta. ¿Podrías intentar de nuevo?', 'bot');
             }
         } catch (error) {
-            console.error('Error sending message:', error);
-            
-            // Wait for typing delay even on error for realistic feel
+            console.error('Error al enviar el mensaje:', error);
+
+            // Esperar el retraso de escritura incluso en caso de error para una experiencia realista
             setTimeout(() => {
                 hideTypingIndicator();
                 addMessageToChat('Lo siento, no puedo responder en este momento. Por favor, intenta más tarde.', 'bot');
@@ -288,7 +287,14 @@
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        return await response.json();
+        const data = await response.json();
+
+        // Validar que la respuesta contiene el campo "output"
+        if (!data.output) {
+            throw new Error('La respuesta del webhook no contiene el campo "output"');
+        }
+
+        return data;
     }
 
     // Get or create session ID

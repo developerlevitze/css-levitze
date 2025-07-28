@@ -221,6 +221,14 @@
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${sender}`;
         
+        // Add sender label for bot messages
+        if (sender === 'bot') {
+            const senderLabel = document.createElement('div');
+            senderLabel.className = 'message-sender';
+            senderLabel.textContent = 'Emilia';
+            messageDiv.appendChild(senderLabel);
+        }
+        
         const bubbleDiv = document.createElement('div');
         bubbleDiv.className = 'message-bubble';
         bubbleDiv.textContent = message;

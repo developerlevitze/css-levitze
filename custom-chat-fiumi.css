@@ -1,0 +1,355 @@
+#n8n-chat-input-area .input-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+/* custom-chat.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+#n8n-chatbot-widget {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 380px;
+    height: 550px;
+    background: #fff;
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.1);
+    display: flex;
+    flex-direction: column;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow: hidden;
+    z-index: 9999;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(100%) translateX(100%) scale(0.8);
+    opacity: 0;
+    visibility: hidden;
+    backdrop-filter: blur(20px);
+}
+
+#n8n-chatbot-widget.open {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 1;
+    visibility: visible;
+}
+
+#n8n-chatbot-toggle-button {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 64px;
+    height: 64px;
+    background: #D0021B;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 8px 25px rgba(244, 139, 34, 0.4), 0 0 0 1px rgba(255,255,255,0.1);
+    font-size: 0; /* Ocultar el texto/emoji del HTML */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10000;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(20px);
+}
+
+/* Reemplazar el emoji con SVG del botsito */
+#n8n-chatbot-toggle-button::before {
+    content: '';
+    width: 32px;
+    height: 32px;
+    background-image: url('https://raw.githubusercontent.com/developerlevitze/css-levitze/main/BOT-saludando-AR-blanco.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#n8n-chatbot-toggle-button:hover {
+    transform: scale(1.1) translateY(-2px);
+    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.5), 0 0 0 1px rgba(255,255,255,0.2);
+    animation: wiggle 0.5s ease-in-out;
+}
+
+@keyframes wiggle {
+    0%, 100% { transform: scale(1.1) translateY(-2px) rotate(0deg); }
+    25% { transform: scale(1.1) translateY(-2px) rotate(-3deg); }
+    75% { transform: scale(1.1) translateY(-2px) rotate(3deg); }
+}
+
+#n8n-chat-header {
+    background: #fff;
+    color: #333;
+    padding: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* Agregar avatar del bot al header */
+#n8n-chat-header::before {
+    content: '';
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-image: url('https://raw.githubusercontent.com/developerlevitze/css-levitze/main/BOT-EN-ESTADO-BÁSICO-blanco.svg');
+    background-size: 32px 32px;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.close-button {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+    flex-shrink: 0;
+}
+
+.close-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+#n8n-chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(102, 126, 234, 0.3) transparent;
+}
+
+#n8n-chat-messages::-webkit-scrollbar {
+    width: 4px;
+}
+
+#n8n-chat-messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#n8n-chat-messages::-webkit-scrollbar-thumb {
+    background: rgba(102, 126, 234, 0.3);
+    border-radius: 2px;
+}
+
+.n8n-message {
+    padding: 12px 16px;
+    border-radius: 18px;
+    max-width: 85%;
+    word-wrap: break-word;
+    font-size: 14px;
+    line-height: 1.4;
+    position: relative;
+    animation: messageSlideIn 0.3s ease-out;
+}
+
+@keyframes messageSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.n8n-message.user {
+    align-self: flex-end;
+    background: #fff;
+    color: #333;
+    border-radius: 18px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.n8n-message.bot {
+    align-self: flex-start;
+    background: #D0021B;
+    color: #fff;
+    border-radius: 18px;
+    border: none;
+    box-shadow: 0 4px 12px rgba(208, 2, 27, 0.15);
+}
+
+.n8n-message.bot::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 12px;
+    width: 16px;
+    height: 16px;
+    background: #D0021B;
+    border: 1px solid rgba(244, 139, 34, 0.15);
+    border-right: none;
+    border-bottom: none;
+    transform: rotate(-45deg);
+    border-radius: 2px 0 0 0;
+}
+
+#n8n-chat-input-area {
+    display: flex;
+    padding: 20px;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    position: relative;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+#levitze-brand {
+    display: block;
+    text-align: center;
+    font-size: 11px;
+    color: #D0021B;
+    font-weight: 400;
+    margin-top: 2px;
+    margin-bottom: -10px;
+    letter-spacing: 0.2px;
+    user-select: none;
+    padding: 0 0 8px 0;
+    opacity: 0.7;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#n8n-user-input {
+    flex-grow: 1;
+    padding: 14px 18px;
+    border: 2px solid rgba(102, 126, 234, 0.1);
+    border-radius: 25px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    background: white;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+#n8n-user-input:focus {
+    border-color: rgba(102, 126, 234, 0.4);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+#n8n-user-input::placeholder {
+    color: #a0aec0;
+}
+
+#n8n-send-button {
+    background: #D0021B;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(244, 139, 34, 0.3);
+    font-size: 20px;
+}
+
+#n8n-send-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+#n8n-send-button:active {
+    transform: scale(0.95);
+}
+
+/* Indicador de escritura mejorado */
+
+#typing-indicator {
+    display: flex;
+    align-items: center;
+    min-height: 24px;
+    background: transparent;
+    box-shadow: none;
+}
+
+.typing-dots {
+    display: flex;
+    gap: 4px;
+    align-items: flex-end;
+    height: 16px;
+    margin-left: 2px;
+}
+
+.typing-dots .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #F48B22;
+    opacity: 0.7;
+    animation: typing-dot 1.2s infinite both;
+}
+.typing-dots .dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+.typing-dots .dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing-dot {
+    0%, 80%, 100% {
+        transform: translateY(0);
+        opacity: 0.7;
+    }
+    40% {
+        transform: translateY(-7px);
+        opacity: 1;
+    }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    #n8n-chatbot-widget {
+        width: calc(100vw - 20px);
+        height: calc(100vh - 40px);
+        bottom: 10px;
+        right: 10px;
+        border-radius: 16px;
+    }
+    
+    #n8n-chatbot-toggle-button {
+        bottom: 20px;
+        right: 20px;
+        width: 56px;
+        height: 56px;
+    }
+}

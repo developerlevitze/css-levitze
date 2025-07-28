@@ -1,184 +1,345 @@
-// custom-chat.js
+// Fiumi Chatbot Widget JavaScript
+(function() {
+    'use strict';
 
-const chatWidget = document.getElementById('n8n-chatbot-widget');
-const toggleButton = document.getElementById('n8n-chatbot-toggle-button');
-const closeButton = document.getElementById('n8n-close-chatbot');
-const chatMessages = document.getElementById('n8n-chat-messages');
-const userInput = document.getElementById('n8n-user-input');
-const sendButton = document.getElementById('n8n-send-button');
+    // Configuration
+    const CONFIG = {
+        n8nWebhookUrl: 'https://levitze.app.n8n.cloud/webhook/a4257301-3fb9-4b9d-a965-1fa66f314696/chat',
+        botName: 'Emilia',
+        welcomeMessage: 'Hola, gracias por contactarte con Fiumi Connect, tu aliado en contacto efectivo con clientes y usuarios.',
+        placeholderText: 'Escribe un mensaje...',
+        sendButtonText: '➤',
+        toggleButtonText: 'Chat de ventas'
+    };
 
-const N8N_CHATBOT_ENDPOINT = 'https://levitze.app.n8n.cloud/webhook/a4257301-3fb9-4b9d-a965-1fa66f314696/chat';
+    let isOpen = false;
+    let isMinimized = false;
+    let messageHistory = [];
 
-let userIp = null;
-let sessionId = null;
-
-async function getUserIpAndSessionId() {
-    try {
-        const res = await fetch('https://api.ipify.org?format=json');
-        const data = await res.json();
-        userIp = data.ip;
-        // Session ID: IP + timestamp
-        sessionId = `${userIp}-${Date.now()}`;
-    } catch (e) {
-        // Si falla, solo usa timestamp
-        sessionId = `unknown-${Date.now()}`;
-    }
-}
-
-// Abrir/cerrar el chatbot
-toggleButton.addEventListener('click', async () => {
-    chatWidget.classList.toggle('open');
-    toggleButton.style.display = chatWidget.classList.contains('open') ? 'none' : 'flex';
-    if (chatWidget.classList.contains('open')) {
-        userInput.focus();
-        if (!sessionId) {
-            await getUserIpAndSessionId();
-        }
-    }
-});
-
-closeButton.addEventListener('click', () => {
-    chatWidget.classList.remove('open');
-    toggleButton.style.display = 'flex';
-});
-
-// Envío de mensajes
-sendButton.addEventListener('click', sendMessage);
-userInput.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-    }
-});
-
-async function sendMessage() {
-    const message = userInput.value.trim();
-    if (!message) return;
-
-    // Añadir mensaje del usuario
-    addMessage(message, 'user');
-    userInput.value = '';
-
-    // Mostrar indicador de escritura
-    showTypingIndicator();
-
-    // Si no hay sessionId, obtenerlo
-    if (!sessionId) {
-        await getUserIpAndSessionId();
+    // Initialize the chatbot
+    function initializeChatbot() {
+        createToggleButton();
+        setupChatWidget();
+        setupEventListeners();
+        addWelcomeMessage();
     }
 
-    try {
-        const response = await fetch(N8N_CHATBOT_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message, sessionId })
-        });
-
-        if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
-
-        const data = await response.json();
-
-        // Eliminar el indicador de escritura
-        removeTypingIndicator();
-
-        // Añadir respuesta del bot con un pequeño delay para mejor UX
-        setTimeout(() => {
-            addMessage(data.output, 'bot');
-        }, 300);
-
-    } catch (error) {
-        removeTypingIndicator();
-        console.error('Error al comunicarse con el chatbot:', error);
-        addMessage('Lo siento, no pude procesar tu solicitud en este momento. Intenta de nuevo más tarde.', 'bot');
-    }
-}
-
-// Agregar "Disponible ahora" y "Emilia" en cada mensaje del bot
-function addMessage(text, sender) {
-    const messageElement = document.createElement('div');
-    messageElement.classList.add('n8n-message', sender);
-
-    if (sender === 'bot') {
-        const botHeader = document.createElement('div');
-        botHeader.classList.add('bot-header');
-        botHeader.innerHTML = '<span class="bot-name">Emilia</span> <span class="bot-status">Disponible ahora</span>';
-        messageElement.appendChild(botHeader);
-    }
-
-    // Formato Markdown simple: negrita y saltos de línea
-    let formatted = text
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // negrita
-        .replace(/\*(.*?)\*/g, '<em>$1</em>') // cursiva
-        .replace(/\n/g, '<br>'); // saltos de línea
-
-    const messageContent = document.createElement('div');
-    messageContent.classList.add('message-content');
-    messageContent.innerHTML = formatted;
-    messageElement.appendChild(messageContent);
-
-    chatMessages.appendChild(messageElement);
-
-    // Scroll suave al final
-    setTimeout(() => {
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }, 100);
-}
-
-// Mostrar botón "X" para cerrar el chat
-closeButton.style.display = 'block';
-closeButton.innerHTML = '✖';
-closeButton.classList.add('close-button');
-
-// Cerrar el chat al hacer clic fuera
-function closeChatOnOutsideClick() {
-    document.addEventListener('click', function(e) {
-        if (!chatWidget.contains(e.target) && !toggleButton.contains(e.target)) {
-            chatWidget.classList.remove('open');
+    // Create toggle button
+    function createToggleButton() {
+        const toggleButton = document.getElementById('n8n-chatbot-toggle-button');
+        if (toggleButton) {
+            toggleButton.innerHTML = CONFIG.toggleButtonText;
             toggleButton.style.display = 'flex';
         }
-    });
-}
-closeChatOnOutsideClick();
-
-// Ajustar posición de los mensajes
-chatMessages.style.padding = '10px';
-chatMessages.style.margin = '0 auto';
-chatMessages.style.maxWidth = '90%';
-
-// Mensaje de bienvenida inicial del bot
-function initializeChat() {
-    if (chatMessages.children.length === 0) {
-        setTimeout(() => {
-            addMessage('👋 ¡Hola, gracias por contactarte con Fiumi Connect, soy Emilia, cuéntame ¿En que te podemos apoyar hoy?', 'bot');        }, 500);
     }
-}
 
-// Inicializar el chat cuando se carga la página
-document.addEventListener('DOMContentLoaded', initializeChat);
+    // Setup chat widget structure
+    function setupChatWidget() {
+        const widget = document.getElementById('n8n-chatbot-widget');
+        const header = document.getElementById('n8n-chat-header');
+        
+        if (header) {
+            header.innerHTML = `
+                <div class="header-content">
+                    <div class="header-title">${CONFIG.botName}</div>
+                    <div class="header-status">
+                        <div class="status-dot"></div>
+                        <span>Disponible ahora</span>
+                    </div>
+                </div>
+                <div class="header-controls">
+                    <button class="header-button close-button" id="n8n-close-chatbot"></button>
+                </div>
+            `;
+        }
 
-// Mejorar la experiencia de usuario
-userInput.addEventListener('input', function() {
-    // Auto-resize del input si es necesario
-    this.style.height = 'auto';
-    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
-});
-
-// Prevenir que se cierre el chat al hacer clic dentro
-chatWidget.addEventListener('click', function(e) {
-    e.stopPropagation();
-});
-
-// Cerrar el chat al hacer clic fuera (opcional)
-document.addEventListener('click', function(e) {
-    if (!chatWidget.contains(e.target) && !toggleButton.contains(e.target)) {
-        // Opcional: descomentar para cerrar al hacer clic fuera
-        // chatWidget.classList.remove('open');
-        // toggleButton.style.display = 'flex';
+        const inputArea = document.getElementById('n8n-chat-input-area');
+        if (inputArea) {
+            inputArea.innerHTML = `
+                <div class="input-row">
+                    <input type="text" id="n8n-user-input" placeholder="${CONFIG.placeholderText}">
+                    <button id="n8n-send-button"></button>
+                </div>
+                <div class="chat-footer">By Fiumi</div>
+            `;
+        }
     }
-});
 
-// Abrir el chat automáticamente al cargar la página
-document.addEventListener('DOMContentLoaded', function() {
-    chatWidget.classList.add('open');
-    if (toggleButton) toggleButton.style.display = 'none';
-});
+    // Add welcome message
+    function addWelcomeMessage() {
+        const messagesContainer = document.getElementById('n8n-chat-messages');
+        if (messagesContainer && messagesContainer.children.length === 0) {
+            const welcomeMsg = document.createElement('div');
+            welcomeMsg.className = 'welcome-message';
+            welcomeMsg.textContent = CONFIG.welcomeMessage;
+            messagesContainer.appendChild(welcomeMsg);
+        }
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+        // Toggle button
+        const toggleButton = document.getElementById('n8n-chatbot-toggle-button');
+        if (toggleButton) {
+            toggleButton.addEventListener('click', toggleChat);
+        }
+
+        // Close button
+        const closeButton = document.getElementById('n8n-close-chatbot');
+        if (closeButton) {
+            closeButton.addEventListener('click', closeChat);
+        }
+
+        // Send button
+        const sendButton = document.getElementById('n8n-send-button');
+        if (sendButton) {
+            sendButton.addEventListener('click', sendMessage);
+        }
+
+        // Input field
+        const inputField = document.getElementById('n8n-user-input');
+        if (inputField) {
+            inputField.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        }
+
+        // Outside click to close
+        document.addEventListener('click', function(e) {
+            const widget = document.getElementById('n8n-chatbot-widget');
+            const toggleButton = document.getElementById('n8n-chatbot-toggle-button');
+            
+            if (isOpen && !widget.contains(e.target) && !toggleButton.contains(e.target)) {
+                // Don't close on outside click - user needs to explicitly close
+            }
+        });
+    }
+
+    // Toggle chat visibility
+    function toggleChat() {
+        if (isOpen) {
+            closeChat();
+        } else {
+            openChat();
+        }
+    }
+
+    // Open chat
+    function openChat() {
+        const widget = document.getElementById('n8n-chatbot-widget');
+        const toggleButton = document.getElementById('n8n-chatbot-toggle-button');
+        
+        if (widget && toggleButton) {
+            widget.style.display = 'flex';
+            widget.classList.add('slide-in');
+            toggleButton.style.display = 'none';
+            isOpen = true;
+            isMinimized = false;
+            
+            // Focus input
+            setTimeout(() => {
+                const input = document.getElementById('n8n-user-input');
+                if (input) input.focus();
+            }, 300);
+        }
+    }
+
+    // Close chat
+    function closeChat() {
+        const widget = document.getElementById('n8n-chatbot-widget');
+        const toggleButton = document.getElementById('n8n-chatbot-toggle-button');
+        
+        if (widget && toggleButton) {
+            widget.classList.add('slide-out');
+            setTimeout(() => {
+                widget.style.display = 'none';
+                widget.classList.remove('slide-in', 'slide-out');
+                toggleButton.style.display = 'flex';
+                isOpen = false;
+                isMinimized = false;
+            }, 300);
+        }
+    }
+
+    // Minimize chat
+    function minimizeChat() {
+        closeChat();
+    }
+
+    // Send message
+    async function sendMessage() {
+        const input = document.getElementById('n8n-user-input');
+        const message = input.value.trim();
+        
+        if (!message) return;
+
+        // Add user message to chat
+        addMessageToChat(message, 'user');
+        
+        // Clear input
+        input.value = '';
+        
+        // Show typing indicator
+        showTypingIndicator();
+        
+        // Simulate realistic typing delay (1-3 seconds)
+        const typingDelay = Math.random() * 2000 + 1000;
+        
+        // Send to n8n webhook
+        try {
+            // Wait for minimum typing delay before showing response
+            const [response] = await Promise.all([
+                sendToN8N(message),
+                new Promise(resolve => setTimeout(resolve, typingDelay))
+            ]);
+            
+            hideTypingIndicator();
+            
+            if (response && response.message) {
+                addMessageToChat(response.message, 'bot');
+            } else {
+                addMessageToChat('Lo siento, hubo un problema con mi respuesta. ¿Podrías intentar de nuevo?', 'bot');
+            }
+        } catch (error) {
+            console.error('Error sending message:', error);
+            
+            // Wait for typing delay even on error for realistic feel
+            setTimeout(() => {
+                hideTypingIndicator();
+                addMessageToChat('Lo siento, no puedo responder en este momento. Por favor, intenta más tarde.', 'bot');
+            }, typingDelay);
+        }
+    }
+
+    // Add message to chat
+    function addMessageToChat(message, sender) {
+        const messagesContainer = document.getElementById('n8n-chat-messages');
+        if (!messagesContainer) return;
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}`;
+        
+        const bubbleDiv = document.createElement('div');
+        bubbleDiv.className = 'message-bubble';
+        bubbleDiv.textContent = message;
+        
+        messageDiv.appendChild(bubbleDiv);
+        messagesContainer.appendChild(messageDiv);
+        
+        // Scroll to bottom
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        // Store in history
+        messageHistory.push({ message, sender, timestamp: new Date() });
+    }
+
+    // Show typing indicator
+    function showTypingIndicator() {
+        const messagesContainer = document.getElementById('n8n-chat-messages');
+        if (!messagesContainer) return;
+
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'typing-indicator';
+        typingDiv.id = 'typing-indicator';
+        
+        for (let i = 0; i < 3; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'typing-dot';
+            typingDiv.appendChild(dot);
+        }
+        
+        messagesContainer.appendChild(typingDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    // Hide typing indicator
+    function hideTypingIndicator() {
+        const typingIndicator = document.getElementById('typing-indicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+    }
+
+    // Send message to n8n webhook
+    async function sendToN8N(message) {
+        // Demo mode - simulate bot responses
+        if (CONFIG.n8nWebhookUrl === 'DEMO_MODE') {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const responses = [
+                        "¡Hola! Gracias por contactarte con Fiumi Connect. ¿En qué puedo ayudarte hoy?",
+                        "Entiendo tu consulta. Nuestro equipo de ventas puede ayudarte con eso.",
+                        "¡Excelente pregunta! Te puedo conectar con un especialista.",
+                        "Fiumi Connect es tu aliado perfecto para el contacto efectivo con clientes.",
+                        "¿Te gustaría conocer más sobre nuestros servicios?"
+                    ];
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    resolve({ message: randomResponse });
+                }, 500);
+            });
+        }
+        
+        // Real webhook mode
+        const response = await fetch(CONFIG.n8nWebhookUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                message: message,
+                timestamp: new Date().toISOString(),
+                sessionId: getSessionId()
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return await response.json();
+    }
+
+    // Get or create session ID
+    function getSessionId() {
+        let sessionId = localStorage.getItem('fiumi-chat-session');
+        if (!sessionId) {
+            sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('fiumi-chat-session', sessionId);
+        }
+        return sessionId;
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeChatbot);
+    } else {
+        initializeChatbot();
+    }
+
+    // Expose global functions if needed
+    window.FiumiChatbot = {
+        open: openChat,
+        close: closeChat,
+        sendMessage: function(message) {
+            const input = document.getElementById('n8n-user-input');
+            if (input) {
+                input.value = message;
+                sendMessage();
+            }
+        },
+        getHistory: function() {
+            return messageHistory;
+        },
+        clearHistory: function() {
+            messageHistory = [];
+            const messagesContainer = document.getElementById('n8n-chat-messages');
+            if (messagesContainer) {
+                messagesContainer.innerHTML = '';
+                addWelcomeMessage();
+            }
+        }
+    };
+
+})();

@@ -140,10 +140,10 @@
 #n8n-chat-messages {
     flex-grow: 1;
     overflow-y: auto;
-    padding: 20px;
+    padding: 10px; /* Reducir padding para mejor alineación */
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 4px; /* Espaciado mínimo entre mensajes */
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
     scrollbar-width: thin;
@@ -172,6 +172,7 @@
     line-height: 1.4;
     position: relative;
     animation: messageSlideIn 0.3s ease-out;
+    margin: 0; /* Eliminar márgenes para que estén pegados */
 }
 
 @keyframes messageSlideIn {
@@ -191,6 +192,7 @@
     color: #333;
     border-radius: 18px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 4px; /* Espaciado mínimo entre mensajes */
 }
 
 .n8n-message.bot {
@@ -201,6 +203,7 @@
     color: #fff;
     box-shadow: 0 4px 12px rgba(208, 2, 27, 0.15);
     position: relative;
+    margin-bottom: 4px; /* Espaciado mínimo entre mensajes */
 }
 
 .n8n-message.bot .message-content {
@@ -291,6 +294,7 @@
     color: #a0aec0;
 }
 
+/* Ajustar el botón de envío */
 #n8n-send-button {
     background: #D0021B;
     color: #fff;
@@ -304,7 +308,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 4px 12px rgba(244, 139, 34, 0.3);
-    font-size: 20px;
+    font-size: 24px; /* Aumentar tamaño para mejor calidad */
 }
 
 #n8n-send-button:hover {

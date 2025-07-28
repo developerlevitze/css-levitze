@@ -272,24 +272,6 @@
 
     // Send message to n8n webhook
     async function sendToN8N(message) {
-        // Demo mode - simulate bot responses
-        if (CONFIG.n8nWebhookUrl === 'DEMO_MODE') {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    const responses = [
-                        "¡Hola! Gracias por contactarte con Fiumi Connect. ¿En qué puedo ayudarte hoy?",
-                        "Entiendo tu consulta. Nuestro equipo de ventas puede ayudarte con eso.",
-                        "¡Excelente pregunta! Te puedo conectar con un especialista.",
-                        "Fiumi Connect es tu aliado perfecto para el contacto efectivo con clientes.",
-                        "¿Te gustaría conocer más sobre nuestros servicios?"
-                    ];
-                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-                    resolve({ message: randomResponse });
-                }, 500);
-            });
-        }
-        
-        // Real webhook mode
         const response = await fetch(CONFIG.n8nWebhookUrl, {
             method: 'POST',
             headers: {

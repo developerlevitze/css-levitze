@@ -4,7 +4,7 @@
 
     // Configuration
     const CONFIG = {
-        n8nWebhookUrl: 'DEMO_MODE', // Set to 'DEMO_MODE' for demo or replace with your actual n8n webhook URL
+        n8nWebhookUrl: 'https://levitze.app.n8n.cloud/webhook/a4257301-3fb9-4b9d-a965-1fa66f314696/chat', // Set to 'DEMO_MODE' for demo or replace with your actual n8n webhook URL
         botName: 'Emilia',
         welcomeMessage: 'Hola, gracias por contactarte con Fiumi Connect, tu aliado en contacto efectivo con clientes y usuarios.',
         placeholderText: 'Escribe un mensaje...',

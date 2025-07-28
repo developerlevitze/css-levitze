@@ -93,9 +93,17 @@ async function sendMessage() {
     }
 }
 
+// Agregar "Disponible ahora" y "Emilia" en cada mensaje del bot
 function addMessage(text, sender) {
     const messageElement = document.createElement('div');
     messageElement.classList.add('n8n-message', sender);
+
+    if (sender === 'bot') {
+        const botHeader = document.createElement('div');
+        botHeader.classList.add('bot-header');
+        botHeader.innerHTML = '<span class="bot-name">Emilia</span> <span class="bot-status">Disponible ahora</span>';
+        messageElement.appendChild(botHeader);
+    }
 
     // Formato Markdown simple: negrita y saltos de línea
     let formatted = text
@@ -103,37 +111,39 @@ function addMessage(text, sender) {
         .replace(/\*(.*?)\*/g, '<em>$1</em>') // cursiva
         .replace(/\n/g, '<br>'); // saltos de línea
 
-    messageElement.innerHTML = formatted;
+    const messageContent = document.createElement('div');
+    messageContent.classList.add('message-content');
+    messageContent.innerHTML = formatted;
+    messageElement.appendChild(messageContent);
+
     chatMessages.appendChild(messageElement);
-    
+
     // Scroll suave al final
     setTimeout(() => {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }, 100);
 }
 
-function showTypingIndicator() {
-    removeTypingIndicator(); // Por si acaso hay uno previo
-    const typingElement = document.createElement('div');
-    typingElement.classList.add('n8n-message', 'bot');
-    typingElement.id = 'typing-indicator';
-    typingElement.innerHTML = `
-      <span class="typing-dots">
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-      </span>
-    `;
-    chatMessages.appendChild(typingElement);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-}
+// Mostrar botón "X" para cerrar el chat
+closeButton.style.display = 'block';
+closeButton.innerHTML = '✖';
+closeButton.classList.add('close-button');
 
-function removeTypingIndicator() {
-    const typingIndicator = document.getElementById('typing-indicator');
-    if (typingIndicator) {
-        typingIndicator.remove();
-    }
+// Cerrar el chat al hacer clic fuera
+function closeChatOnOutsideClick() {
+    document.addEventListener('click', function(e) {
+        if (!chatWidget.contains(e.target) && !toggleButton.contains(e.target)) {
+            chatWidget.classList.remove('open');
+            toggleButton.style.display = 'flex';
+        }
+    });
 }
+closeChatOnOutsideClick();
+
+// Ajustar posición de los mensajes
+chatMessages.style.padding = '10px';
+chatMessages.style.margin = '0 auto';
+chatMessages.style.maxWidth = '90%';
 
 // Mensaje de bienvenida inicial del bot
 function initializeChat() {

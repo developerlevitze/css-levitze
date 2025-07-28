@@ -289,9 +289,9 @@
 
         const data = await response.json();
 
-        // Validar que la respuesta contiene el campo "output"
-        if (!data.output) {
-            throw new Error('La respuesta del webhook no contiene el campo "output"');
+        // Validar que la respuesta contiene el campo "output" y no está vacío
+        if (!data.output || typeof data.output !== 'string' || data.output.trim() === '') {
+            throw new Error('La respuesta del webhook no contiene un campo "output" válido');
         }
 
         return data;

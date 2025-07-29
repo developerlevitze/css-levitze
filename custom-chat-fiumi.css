@@ -6,33 +6,41 @@
 /* Toggle Button (Chat de ventas) */
 #n8n-chatbot-toggle-button {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 25px;
+  right: 25px;
   background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
   color: white;
   border: none;
-  border-radius: 25px;
-  padding: 12px 20px;
-  font-size: 14px;
+  border-radius: 35px;
+  padding: 18px 28px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   z-index: 1000;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.35);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   transition: all 0.3s ease;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  min-width: 180px;
+  justify-content: center;
 }
 
 #n8n-chatbot-toggle-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(220, 38, 38, 0.45);
 }
 
 #n8n-chatbot-toggle-button::before {
-  content: "💬";
-  font-size: 16px;
+  content: "";
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24'%3E%3Cpath d='M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 /* Chat Widget Container */
@@ -296,8 +304,11 @@
   }
   
   #n8n-chatbot-toggle-button {
-    right: 10px;
-    bottom: 10px;
+    right: 15px;
+    bottom: 15px;
+    padding: 16px 24px;
+    font-size: 15px;
+    min-width: 160px;
   }
 }
 

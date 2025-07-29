@@ -314,21 +314,23 @@
 
 /* Animation Classes */
 .slide-in {
-  animation: slideIn 0.3s ease-out;
+  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .slide-out {
-  animation: slideOut 0.3s ease-out;
+  animation: slideOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 @keyframes slideIn {
   from {
     opacity: 0;
     transform: translateY(20px) scale(0.95);
+    visibility: visible;
   }
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+    visibility: visible;
   }
 }
 
@@ -336,10 +338,12 @@
   from {
     opacity: 1;
     transform: translateY(0) scale(1);
+    visibility: visible;
   }
   to {
     opacity: 0;
     transform: translateY(20px) scale(0.95);
+    visibility: visible;
   }
 }
 

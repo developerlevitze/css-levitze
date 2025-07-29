@@ -131,12 +131,18 @@
         const widget = document.getElementById('n8n-chatbot-widget');
         const toggleButton = document.getElementById('n8n-chatbot-toggle-button');
         
-        if (widget && toggleButton) {
-            widget.style.display = 'flex';
-            widget.classList.add('slide-in');
-            toggleButton.style.display = 'none';
-            isOpen = true;
+        if (widget && toggleButton && !isOpen) {
+            isOpen = true; // Cambiar el estado inmediatamente
             isMinimized = false;
+            
+            toggleButton.style.display = 'none';
+            widget.style.display = 'flex';
+            
+            // Pequeño delay para asegurar que el display se aplique antes de la animación
+            setTimeout(() => {
+                widget.classList.remove('slide-out');
+                widget.classList.add('slide-in');
+            }, 10);
             
             // Focus input
             setTimeout(() => {
@@ -151,14 +157,19 @@
         const widget = document.getElementById('n8n-chatbot-widget');
         const toggleButton = document.getElementById('n8n-chatbot-toggle-button');
         
-        if (widget && toggleButton) {
+        if (widget && toggleButton && isOpen) {
+            isOpen = false; // Cambiar el estado inmediatamente para evitar múltiples llamadas
+            
+            widget.classList.remove('slide-in');
             widget.classList.add('slide-out');
+            
             setTimeout(() => {
-                widget.style.display = 'none';
-                widget.classList.remove('slide-in', 'slide-out');
-                toggleButton.style.display = 'flex';
-                isOpen = false;
-                isMinimized = false;
+                if (widget.style.display !== 'none') { // Solo ocultar si no está ya oculto
+                    widget.style.display = 'none';
+                    widget.classList.remove('slide-out');
+                    toggleButton.style.display = 'flex';
+                    isMinimized = false;
+                }
             }, 300);
         }
     }

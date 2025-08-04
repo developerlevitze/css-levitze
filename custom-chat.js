@@ -12,6 +12,18 @@ const N8N_CHATBOT_ENDPOINT = 'https://levitze.app.n8n.cloud/webhook/09717355-cf5
 let userIp = null;
 let sessionId = null;
 
+// Detectar si es dispositivo móvil
+function isMobile() {
+    return window.innerWidth <= 480 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+// Aplicar clase móvil compacta si es necesario
+function applyMobileSettings() {
+    if (isMobile()) {
+        chatWidget.classList.add('mobile-compact');
+    }
+}
+
 async function getUserIpAndSessionId() {
     try {
         const res = await fetch('https://api.ipify.org?format=json');
@@ -137,6 +149,9 @@ function removeTypingIndicator() {
 
 // Mensaje de bienvenida inicial del bot
 function initializeChat() {
+    // Aplicar configuración móvil
+    applyMobileSettings();
+    
     if (chatMessages.children.length === 0) {
         setTimeout(() => {
             addMessage('¡Hola! Bienvenido a Levitze, donde creamos Chatbots para prospectar y atender tus cliente 24/7. Dime, ¿qué ideas tienes en mente para maximizar cada visita a tu sitio web?', 'bot');
@@ -170,6 +185,16 @@ document.addEventListener('click', function(e) {
 
 // Abrir el chat automáticamente al cargar la página
 document.addEventListener('DOMContentLoaded', function() {
-    chatWidget.classList.add('open');
-    if (toggleButton) toggleButton.style.display = 'none';
+    // En móviles, esperar un poco más antes de abrir
+    const delay = isMobile() ? 2000 : 0;
+    
+    setTimeout(() => {
+        chatWidget.classList.add('open');
+        if (toggleButton) toggleButton.style.display = 'none';
+    }, delay);
+});
+
+// Manejar cambios de orientación y redimensionamiento
+window.addEventListener('resize', function() {
+    applyMobileSettings();
 });

@@ -341,11 +341,18 @@
 /* Responsive */
 @media (max-width: 480px) {
     #n8n-chatbot-widget {
-        width: calc(100vw - 20px);
-        height: calc(100vh - 40px);
-        bottom: 10px;
+        width: 320px;
+        height: 400px;
+        bottom: 80px;
         right: 10px;
         border-radius: 16px;
+    }
+    
+    #n8n-chatbot-widget.mobile-compact {
+        width: 280px;
+        height: 350px;
+        bottom: 80px;
+        right: 15px;
     }
     
     #n8n-chatbot-toggle-button {
@@ -353,5 +360,35 @@
         right: 20px;
         width: 56px;
         height: 56px;
+    }
+    
+    #n8n-chat-header {
+        padding: 12px 16px;
+        font-size: 14px;
+    }
+    
+    #n8n-chat-messages {
+        padding: 12px;
+        gap: 12px;
+    }
+    
+    .n8n-message {
+        font-size: 13px;
+        max-width: 90%;
+    }
+    
+    #n8n-chat-input-area {
+        padding: 12px 16px;
+    }
+    
+    #n8n-user-input {
+        font-size: 14px;
+        padding: 10px 14px;
+    }
+    
+    #n8n-send-button {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
     }
 }

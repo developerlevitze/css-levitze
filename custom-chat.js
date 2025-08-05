@@ -30,8 +30,14 @@ toggleButton.addEventListener('click', async () => {
     chatWidget.classList.toggle('open');
     
     if (chatWidget.classList.contains('open')) {
-        // Ocultar el botón cuando el chat esté abierto
+        // Múltiples métodos para asegurar que el botón desaparezca
         toggleButton.classList.add('hidden');
+        toggleButton.style.display = 'none';
+        toggleButton.style.visibility = 'hidden';
+        toggleButton.style.opacity = '0';
+        toggleButton.style.transform = 'scale(0)';
+        toggleButton.style.pointerEvents = 'none';
+        
         userInput.focus();
         if (!sessionId) {
             await getUserIpAndSessionId();
@@ -39,13 +45,24 @@ toggleButton.addEventListener('click', async () => {
     } else {
         // Mostrar el botón cuando el chat esté cerrado
         toggleButton.classList.remove('hidden');
+        toggleButton.style.display = 'flex';
+        toggleButton.style.visibility = 'visible';
+        toggleButton.style.opacity = '1';
+        toggleButton.style.transform = 'scale(1)';
+        toggleButton.style.pointerEvents = 'auto';
     }
 });
 
 closeButton.addEventListener('click', () => {
     chatWidget.classList.remove('open');
-    // Mostrar el botón de toggle al cerrar
+    
+    // Mostrar el botón de toggle al cerrar con múltiples métodos
     toggleButton.classList.remove('hidden');
+    toggleButton.style.display = 'flex';
+    toggleButton.style.visibility = 'visible';
+    toggleButton.style.opacity = '1';
+    toggleButton.style.transform = 'scale(1)';
+    toggleButton.style.pointerEvents = 'auto';
 });
 
 // Envío de mensajes
@@ -180,7 +197,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if (window.innerWidth > 480) {
         setTimeout(() => {
             chatWidget.classList.add('open');
-            if (toggleButton) toggleButton.classList.add('hidden');
+            if (toggleButton) {
+                toggleButton.classList.add('hidden');
+                toggleButton.style.display = 'none';
+                toggleButton.style.visibility = 'hidden';
+                toggleButton.style.opacity = '0';
+                toggleButton.style.transform = 'scale(0)';
+                toggleButton.style.pointerEvents = 'none';
+            }
         }, 0);
     }
 });

@@ -373,6 +373,10 @@
     
     #n8n-chatbot-toggle-button.hidden {
         display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        transform: scale(0) !important;
     }
     
     #n8n-chat-header {

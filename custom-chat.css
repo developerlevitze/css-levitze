@@ -371,12 +371,26 @@
         position: fixed;
     }
     
-    #n8n-chatbot-toggle-button.hidden {
+    #n8n-chatbot-toggle-button.hidden,
+    #n8n-chatbot-toggle-button.hidden *,
+    button#n8n-chatbot-toggle-button.hidden,
+    [id="n8n-chatbot-toggle-button"].hidden {
         display: none !important;
         visibility: hidden !important;
         opacity: 0 !important;
         pointer-events: none !important;
         transform: scale(0) !important;
+        position: absolute !important;
+        left: -99999px !important;
+        top: -99999px !important;
+        width: 0px !important;
+        height: 0px !important;
+        z-index: -1 !important;
+        overflow: hidden !important;
+        clip: rect(0, 0, 0, 0) !important;
+        margin: -1px !important;
+        padding: 0 !important;
+        border: 0 !important;
     }
     
     #n8n-chat-header {

@@ -54,9 +54,10 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 10000;
+    z-index: 9999999;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     backdrop-filter: blur(20px);
+    isolation: isolate;
 }
 
 /* Reemplazar el emoji con SVG del botsito */
@@ -369,6 +370,51 @@
         height: 56px;
         z-index: 1000000;
         position: fixed;
+    }
+    
+    /* Solución específica para conflictos con TranslatePress */
+    #trp-floater-ls {
+        z-index: 999 !important;
+        position: static !important; /* Desactivar position fixed que interfiere */
+    }
+    
+    /* Neutralizar completamente el flotador de idiomas cuando el chat está abierto */
+    #n8n-chatbot-widget.open ~ #trp-floater-ls,
+    body:has(#n8n-chatbot-widget.open) #trp-floater-ls {
+        position: static !important;
+        display: none !important;
+        visibility: hidden !important;
+    }
+    
+    /* Asegurar que nuestro botón tenga prioridad sobre otros elementos flotantes */
+    #n8n-chatbot-toggle-button {
+        z-index: 9999999 !important;
+        position: fixed !important;
+        isolation: isolate !important;
+    }
+    
+    /* Neutralizar elementos flotantes que interfieren con nuestro botón */
+    #trp-floater-ls,
+    .trp-language-switcher,
+    .trp-ls-shortcode-language,
+    [id*="trp-"],
+    [class*="trp-"] {
+        position: static !important;
+    }
+    
+    /* Cuando el chat está abierto, neutralizar completamente estos elementos */
+    #n8n-chatbot-widget.open ~ #trp-floater-ls,
+    #n8n-chatbot-widget.open ~ [id*="trp-"],
+    #n8n-chatbot-widget.open ~ [class*="trp-"] {
+        position: static !important;
+        display: none !important;
+        visibility: hidden !important;
+        z-index: -1 !important;
+    }
+    
+    #n8n-chatbot-widget {
+        z-index: 9999998 !important;
+        isolation: isolate !important;
     }
     
     #n8n-chatbot-toggle-button.hidden,

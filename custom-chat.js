@@ -29,11 +29,20 @@ async function getUserIpAndSessionId() {
 function hideToggleButton() {
     if (!toggleButton) return;
     
+    // Neutralizar elementos flotantes de TranslatePress que interfieren
+    const trpElements = document.querySelectorAll('#trp-floater-ls, [id*="trp-"], [class*="trp-"]');
+    trpElements.forEach(element => {
+        element.style.position = 'static !important';
+        element.style.display = 'none !important';
+        element.style.visibility = 'hidden !important';
+        element.style.zIndex = '-1';
+    });
+    
     // Remover todas las clases que puedan estar interfiriendo
     toggleButton.className = '';
     toggleButton.classList.add('hidden');
     
-    // Aplicar estilos inline con !important (simulado con múltiples propiedades)
+    // Aplicar estilos inline con máxima prioridad
     toggleButton.setAttribute('style', `
         display: none !important;
         visibility: hidden !important;
@@ -41,22 +50,33 @@ function hideToggleButton() {
         pointer-events: none !important;
         transform: scale(0) !important;
         position: absolute !important;
-        left: -9999px !important;
-        top: -9999px !important;
-        width: 0 !important;
-        height: 0 !important;
+        left: -99999px !important;
+        top: -99999px !important;
+        width: 0px !important;
+        height: 0px !important;
         z-index: -1 !important;
+        isolation: isolate !important;
     `);
     
-    // Método adicional: remover del DOM temporalmente
-    if (toggleButton.parentNode) {
-        toggleButton.style.cssText = 'display: none !important; visibility: hidden !important; opacity: 0 !important; position: absolute !important; left: -99999px !important; top: -99999px !important; width: 0px !important; height: 0px !important; z-index: -1 !important; pointer-events: none !important; transform: scale(0) !important;';
-    }
+    // Método nuclear: eliminar completamente del flujo del documento
+    toggleButton.style.cssText = 'display: none !important; visibility: hidden !important; opacity: 0 !important; position: absolute !important; left: -999999px !important; top: -999999px !important; width: 0px !important; height: 0px !important; z-index: -9999 !important; pointer-events: none !important; transform: scale(0) !important; isolation: isolate !important; contain: layout style paint !important;';
+    
+    // Forzar reflow para asegurar que se apliquen los cambios
+    toggleButton.offsetHeight;
 }
 
 // Función para mostrar el botón
 function showToggleButton() {
     if (!toggleButton) return;
+    
+    // Restaurar elementos de TranslatePress cuando se cierra el chat
+    const trpElements = document.querySelectorAll('#trp-floater-ls, [id*="trp-"], [class*="trp-"]');
+    trpElements.forEach(element => {
+        element.style.position = '';
+        element.style.display = '';
+        element.style.visibility = '';
+        element.style.zIndex = '';
+    });
     
     toggleButton.classList.remove('hidden');
     toggleButton.setAttribute('style', `
@@ -70,7 +90,8 @@ function showToggleButton() {
         right: 25px !important;
         width: 64px !important;
         height: 64px !important;
-        z-index: 10000 !important;
+        z-index: 9999999 !important;
+        isolation: isolate !important;
     `);
 }
 
@@ -81,8 +102,8 @@ function enforceButtonVisibility() {
     }
 }
 
-// Ejecutar la función cada 100ms para asegurar que el botón se mantenga oculto
-setInterval(enforceButtonVisibility, 100);
+// Ejecutar la función cada 50ms para una respuesta más rápida contra interferencias
+setInterval(enforceButtonVisibility, 50);
 
 // Abrir/cerrar el chatbot
 toggleButton.addEventListener('click', async () => {

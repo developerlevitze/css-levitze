@@ -373,17 +373,17 @@
     }
     
     /* Solución específica para conflictos con TranslatePress */
+    /* Solo ocultar temporalmente cuando el chat está abierto, no cambiar position permanentemente */
     #trp-floater-ls {
         z-index: 999 !important;
-        position: static !important; /* Desactivar position fixed que interfiere */
     }
     
-    /* Neutralizar completamente el flotador de idiomas cuando el chat está abierto */
+    /* Neutralizar completamente el flotador de idiomas SOLO cuando el chat está abierto */
     #n8n-chatbot-widget.open ~ #trp-floater-ls,
     body:has(#n8n-chatbot-widget.open) #trp-floater-ls {
-        position: static !important;
         display: none !important;
         visibility: hidden !important;
+        opacity: 0 !important;
     }
     
     /* Asegurar que nuestro botón tenga prioridad sobre otros elementos flotantes */
@@ -393,22 +393,12 @@
         isolation: isolate !important;
     }
     
-    /* Neutralizar elementos flotantes que interfieren con nuestro botón */
-    #trp-floater-ls,
-    .trp-language-switcher,
-    .trp-ls-shortcode-language,
-    [id*="trp-"],
-    [class*="trp-"] {
-        position: static !important;
-    }
-    
-    /* Cuando el chat está abierto, neutralizar completamente estos elementos */
+    /* Cuando el chat está abierto, ocultar temporalmente elementos que interfieren */
     #n8n-chatbot-widget.open ~ #trp-floater-ls,
-    #n8n-chatbot-widget.open ~ [id*="trp-"],
-    #n8n-chatbot-widget.open ~ [class*="trp-"] {
-        position: static !important;
+    #n8n-chatbot-widget.open ~ [id*="trp-"][id*="floater"] {
         display: none !important;
         visibility: hidden !important;
+        opacity: 0 !important;
         z-index: -1 !important;
     }
     

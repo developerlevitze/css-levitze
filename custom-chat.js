@@ -29,12 +29,13 @@ async function getUserIpAndSessionId() {
 function hideToggleButton() {
     if (!toggleButton) return;
     
-    // Neutralizar elementos flotantes de TranslatePress que interfieren
+    // SOLO neutralizar elementos de TranslatePress cuando el chat esté abierto
     const trpElements = document.querySelectorAll('#trp-floater-ls, [id*="trp-"], [class*="trp-"]');
     trpElements.forEach(element => {
-        element.style.position = 'static !important';
+        // Solo ocultar temporalmente, no cambiar position
         element.style.display = 'none !important';
         element.style.visibility = 'hidden !important';
+        element.style.opacity = '0';
         element.style.zIndex = '-1';
     });
     
@@ -69,12 +70,13 @@ function hideToggleButton() {
 function showToggleButton() {
     if (!toggleButton) return;
     
-    // Restaurar elementos de TranslatePress cuando se cierra el chat
+    // RESTAURAR elementos de TranslatePress cuando se cierra el chat
     const trpElements = document.querySelectorAll('#trp-floater-ls, [id*="trp-"], [class*="trp-"]');
     trpElements.forEach(element => {
-        element.style.position = '';
+        // Restaurar a su estado original (NO cambiar position)
         element.style.display = '';
         element.style.visibility = '';
+        element.style.opacity = '';
         element.style.zIndex = '';
     });
     

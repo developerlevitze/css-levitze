@@ -29,6 +29,16 @@ async function getUserIpAndSessionId() {
 toggleButton.addEventListener('click', async () => {
     chatWidget.classList.toggle('open');
     toggleButton.style.display = chatWidget.classList.contains('open') ? 'none' : 'flex';
+    
+    // En móvil, controlar el scroll del body
+    if (window.innerWidth <= 480) {
+        if (chatWidget.classList.contains('open')) {
+            document.body.classList.add('chat-open');
+        } else {
+            document.body.classList.remove('chat-open');
+        }
+    }
+    
     if (chatWidget.classList.contains('open')) {
         userInput.focus();
         if (!sessionId) {
@@ -40,6 +50,11 @@ toggleButton.addEventListener('click', async () => {
 closeButton.addEventListener('click', () => {
     chatWidget.classList.remove('open');
     toggleButton.style.display = 'flex';
+    
+    // En móvil, permitir scroll del body al cerrar
+    if (window.innerWidth <= 480) {
+        document.body.classList.remove('chat-open');
+    }
 });
 
 // Envío de mensajes

@@ -28,33 +28,24 @@ async function getUserIpAndSessionId() {
 // Abrir/cerrar el chatbot
 toggleButton.addEventListener('click', async () => {
     chatWidget.classList.toggle('open');
-    toggleButton.style.display = chatWidget.classList.contains('open') ? 'none' : 'flex';
-    
-    // En móvil, controlar el scroll del body
-    if (window.innerWidth <= 480) {
-        if (chatWidget.classList.contains('open')) {
-            document.body.classList.add('chat-open');
-        } else {
-            document.body.classList.remove('chat-open');
-        }
-    }
     
     if (chatWidget.classList.contains('open')) {
+        // Ocultar el botón cuando el chat esté abierto
+        toggleButton.classList.add('hidden');
         userInput.focus();
         if (!sessionId) {
             await getUserIpAndSessionId();
         }
+    } else {
+        // Mostrar el botón cuando el chat esté cerrado
+        toggleButton.classList.remove('hidden');
     }
 });
 
 closeButton.addEventListener('click', () => {
     chatWidget.classList.remove('open');
-    toggleButton.style.display = 'flex';
-    
-    // En móvil, permitir scroll del body al cerrar
-    if (window.innerWidth <= 480) {
-        document.body.classList.remove('chat-open');
-    }
+    // Mostrar el botón de toggle al cerrar
+    toggleButton.classList.remove('hidden');
 });
 
 // Envío de mensajes
@@ -189,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (window.innerWidth > 480) {
         setTimeout(() => {
             chatWidget.classList.add('open');
-            if (toggleButton) toggleButton.style.display = 'none';
+            if (toggleButton) toggleButton.classList.add('hidden');
         }, 0);
     }
 });

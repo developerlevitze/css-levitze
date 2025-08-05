@@ -347,10 +347,19 @@
         right: 0;
         border-radius: 0;
         transform: translateX(100%);
+        z-index: 99999;
+        position: fixed;
+        top: 0;
+        left: 0;
+        visibility: hidden;
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     #n8n-chatbot-widget.open {
         transform: translateX(0);
+        visibility: visible;
+        opacity: 1;
     }
     
     #n8n-chatbot-toggle-button {
@@ -358,12 +367,15 @@
         right: 20px;
         width: 56px;
         height: 56px;
+        z-index: 100000;
+        position: fixed;
     }
     
     #n8n-chat-header {
-        padding: 20px 16px;
+        padding: 50px 16px 20px 16px;
         font-size: 16px;
         background: linear-gradient(135deg, #F48B22 0%, #4F5650 100%);
+        padding-top: env(safe-area-inset-top, 50px);
     }
     
     #n8n-chat-messages {
@@ -377,7 +389,7 @@
     }
     
     #n8n-chat-input-area {
-        padding: 16px;
+        padding: 16px 16px calc(env(safe-area-inset-bottom, 20px) + 16px) 16px;
     }
     
     #n8n-user-input {

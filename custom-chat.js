@@ -7,7 +7,7 @@ const chatMessages = document.getElementById('n8n-chat-messages');
 const userInput = document.getElementById('n8n-user-input');
 const sendButton = document.getElementById('n8n-send-button');
 
-const N8N_CHATBOT_ENDPOINT = 'https://levitze.app.n8n.cloud/webhook/09717355-cf53-47ac-85d4-400eb3be23b7/chat';
+const N8N_CHATBOT_ENDPOINT = 'https://levitze-n8n.zlrp4i.easypanel.host/webhook/09717355-cf53-47ac-85d4-400eb3be23b7/chat';
 
 let userIp = null;
 let sessionId = null;

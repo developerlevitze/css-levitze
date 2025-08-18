@@ -12,6 +12,23 @@ const N8N_CHATBOT_ENDPOINT = 'https://levitze-n8n.zlrp4i.easypanel.host/webhook/
 let userIp = null;
 let sessionId = null;
 
+// NUEVAS VARIABLES PARA POLLING DE AGENTES
+let lastAgentMessageId = null;
+let isPolling = false;
+let pollingInterval = null;
+const agentCheckUrl = 'https://levitze-n8n.zlrp4i.easypanel.host/webhook-test/check-agent-messages';
+
+// Función para cargar un script externo
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = () => resolve(script);
+    script.onerror = () => reject(new Error(`Script load error for ${src}`));
+    document.head.appendChild(script);
+  });
+}
+
 async function getUserIpAndSessionId() {
     try {
         const res = await fetch('https://api.ipify.org?format=json');
@@ -22,6 +39,49 @@ async function getUserIpAndSessionId() {
     } catch (e) {
         // Si falla, solo usa timestamp
         sessionId = `unknown-${Date.now()}`;
+    }
+}
+
+// NUEVA FUNCIÓN: Polling para mensajes del agente
+function startAgentPolling() {
+    // Solo hace polling cuando hay una sesión activa y el chat está abierto
+    pollingInterval = setInterval(() => {
+        if (sessionId && !isPolling && chatWidget.classList.contains('open')) {
+            checkAgentMessages();
+        }
+    }, 3000); // Cada 3 segundos - muy ligero
+}
+
+// NUEVA FUNCIÓN: Verificar mensajes del agente
+async function checkAgentMessages() {
+    if (!sessionId) return;
+    
+    isPolling = true;
+    try {
+        const response = await fetch(`${agentCheckUrl}?sessionId=${sessionId}&lastMessageId=${lastAgentMessageId || 0}`);
+        
+        if (response.ok) {
+            const data = await response.json();
+            
+            if (data.hasNewMessages && data.messages) {
+                data.messages.forEach(message => {
+                    addMessage(message.content, 'agent', message.agentName);
+                    lastAgentMessageId = message.id;
+                });
+            }
+        }
+    } catch (error) {
+        console.error('Error checking agent messages:', error);
+    } finally {
+        isPolling = false;
+    }
+}
+
+// NUEVA FUNCIÓN: Limpiar polling
+function stopAgentPolling() {
+    if (pollingInterval) {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
     }
 }
 
@@ -117,14 +177,20 @@ toggleButton.addEventListener('click', async () => {
         if (!sessionId) {
             await getUserIpAndSessionId();
         }
+        // INICIAR POLLING CUANDO SE ABRE EL CHAT
+        startAgentPolling();
     } else {
         showToggleButton();
+        // DETENER POLLING CUANDO SE CIERRA EL CHAT
+        stopAgentPolling();
     }
 });
 
 closeButton.addEventListener('click', () => {
     chatWidget.classList.remove('open');
     showToggleButton();
+    // DETENER POLLING CUANDO SE CIERRA EL CHAT
+    stopAgentPolling();
 });
 
 // Envío de mensajes
@@ -178,17 +244,38 @@ async function sendMessage() {
     }
 }
 
-function addMessage(text, sender) {
+// FUNCIÓN MODIFICADA: addMessage ahora maneja diferentes tipos de mensajes
+function addMessage(text, sender, agentName = null) {
     const messageElement = document.createElement('div');
-    messageElement.classList.add('n8n-message', sender);
+    
+    if (sender === 'agent') {
+        messageElement.classList.add('n8n-message', 'agent');
+        
+        // Formato Markdown simple: negrita y saltos de línea
+        let formatted = text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // negrita
+            .replace(/\*(.*?)\*/g, '<em>$1</em>') // cursiva
+            .replace(/\n/g, '<br>'); // saltos de línea
 
-    // Formato Markdown simple: negrita y saltos de línea
-    let formatted = text
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // negrita
-        .replace(/\*(.*?)\*/g, '<em>$1</em>') // cursiva
-        .replace(/\n/g, '<br>'); // saltos de línea
+        messageElement.innerHTML = `
+            <div class="agent-info">
+                <span class="agent-name">${agentName || 'Agente'}</span>
+                <span class="agent-badge">👤</span>
+            </div>
+            <div class="message-content">${formatted}</div>
+        `;
+    } else {
+        messageElement.classList.add('n8n-message', sender);
 
-    messageElement.innerHTML = formatted;
+        // Formato Markdown simple: negrita y saltos de línea
+        let formatted = text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // negrita
+            .replace(/\*(.*?)\*/g, '<em>$1</em>') // cursiva
+            .replace(/\n/g, '<br>'); // saltos de línea
+
+        messageElement.innerHTML = formatted;
+    }
+    
     chatMessages.appendChild(messageElement);
     
     // Scroll suave al final
@@ -221,11 +308,38 @@ function removeTypingIndicator() {
 }
 
 // Mensaje de bienvenida inicial del bot
-function initializeChat() {
+// Asegúrate de que esta función sea `async`
+async function initializeChat() {
+    // Si el chat no tiene mensajes, agrega el mensaje de bienvenida
     if (chatMessages.children.length === 0) {
         setTimeout(() => {
             addMessage('¡Hola! Bienvenido a Levitze, donde creamos Chatbots para prospectar y atender tus cliente 24/7. Dime, ¿qué ideas tienes en mente para maximizar cada visita a tu sitio web?', 'bot');
         }, 500);
+    }
+    
+    try {
+        // Carga el SDK de Pusher de forma dinámica
+        await loadScript('https://js.pusher.com/8.4.0/pusher.min.js');
+        
+        // Configura Pusher y el listener del canal
+        const pusher = new Pusher('03e724d8990b117971d1', {
+            cluster: 'us2'
+        });
+        
+        // Obtenemos el sessionId antes de suscribirnos al canal
+        if (!sessionId) {
+            await getUserIpAndSessionId();
+        }
+        
+        const channel = pusher.subscribe(`chat-session-${sessionId}`);
+        
+        // Bindea la función para recibir nuevos mensajes
+        channel.bind('new-message', function(data) {
+            addMessage(data.message, 'bot');
+        });
+
+    } catch (error) {
+        console.error('Error al iniciar el chat:', error);
     }
 }
 
@@ -260,6 +374,13 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             chatWidget.classList.add('open');
             hideToggleButton();
+            // INICIAR POLLING AL ABRIR AUTOMÁTICAMENTE
+            startAgentPolling();
         }, 0);
     }
+});
+
+// LIMPIEZA AL SALIR DE LA PÁGINA
+window.addEventListener('beforeunload', () => {
+    stopAgentPolling();
 });

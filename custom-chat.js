@@ -9,80 +9,8 @@ const sendButton = document.getElementById('n8n-send-button');
 
 const N8N_CHATBOT_ENDPOINT = 'https://levitze-n8n.zlrp4i.easypanel.host/webhook/09717355-cf53-47ac-85d4-400eb3be23b7/chat';
 
-
-// URL del nuevo webhook en n8n que crearas para recibir mensajes
-const N8N_POLLING_ENDPOINT = 'https://levitze-n8n.zlrp4i.easypanel.host/webhook/levitze-human-agent';
-
+let userIp = null;
 let sessionId = null;
-let pollingInterval = null;
-
-// Nueva función para procesar mensajes recibidos de n8n
-function processReceivedMessage(message) {
-  if (message) {
-    addMessage(message, 'bot');
-  }
-}
-
-// Función que periódicamente revisa si hay nuevos mensajes
-async function pollForMessages() {
-  if (!sessionId) {
-    return; // No sondea si no hay una sesión activa
-  }
-
-  try {
-    const response = await fetch(N8N_POLLING_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sessionId }) // Envía el sessionId para identificar la conversación
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      if (data.message) {
-        processReceivedMessage(data.message);
-      }
-    }
-  } catch (error) {
-    console.error('Error al sondear por mensajes:', error);
-  }
-}
-
-// Inicia el sondeo cada 3 segundos
-function startPolling() {
-  if (pollingInterval) return;
-  pollingInterval = setInterval(pollForMessages, 3000);
-}
-
-// Envío de mensajes del usuario
-async function sendMessage() {
-    const message = userInput.value.trim();
-    if (!message) return;
-
-    // Añade el mensaje del usuario al chat
-    addMessage(message, 'user');
-    userInput.value = '';
-
-    // Si no hay sessionId, lo obtiene
-    if (!sessionId) {
-        await getUserIpAndSessionId();
-    }
-    
-    // Envía el mensaje del usuario al webhook de n8n
-    try {
-        await fetch(N8N_CHATBOT_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message, sessionId })
-        });
-        
-        // Inicia el sondeo para esperar la respuesta del bot
-        startPolling();
-
-    } catch (error) {
-        console.error('Error al enviar el mensaje:', error);
-        addMessage('Lo siento, no pude enviar tu solicitud.', 'bot');
-    }
-}
 
 async function getUserIpAndSessionId() {
     try {
